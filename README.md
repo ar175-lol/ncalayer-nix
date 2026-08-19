@@ -5,6 +5,7 @@
 ## Installation guide
 ```bash
 git clone https://github.com/ar175-lol/ncalayer-nix
+cd ncalayer-nix
 nix-shell
 ./ncalayer.sh
 ```
@@ -17,6 +18,7 @@ nix-shell
 ## Установка
 ```bash
 git clone https://github.com/ar175-lol/ncalayer-nix
+cd ncalayer-nix
 nix-shell
 ./ncalayer.sh
 ```
@@ -28,6 +30,7 @@ nix-shell
 ## Орнату
 ```bash
 git clone https://github.com/ar175-lol/ncalayer-nix
+cd ncalayer-nix
 nix-shell
 ./ncalayer.sh
 ```
