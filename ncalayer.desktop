@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=NCALayer
+Name[ru]=NCALayer
+GenericName=Layer for KNCA
+GenericName[ru]=NCALayer
+Comment=NCALayer
+Comment[ru]=Приложение для работы с ЭЦП
+Icon=ncalayer
+Exec=ncalayer
+Terminal=false
+Categories=Network;RemoteAccess;
