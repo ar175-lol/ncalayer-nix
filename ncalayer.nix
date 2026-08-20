@@ -38,7 +38,7 @@
   # Fix up every JRE executable to use the glibc loader from nixpkgs, then
   # provide the rest of its shared libraries through LD_LIBRARY_PATH.
   loader =
-    if stdenv.isAarch64
+    if stdenv.hostPlatform.isAarch64
     then "${glibc}/lib/ld-linux-aarch64.so.1"
     else "${glibc}/lib/ld-linux-x86-64.so.2";
 
