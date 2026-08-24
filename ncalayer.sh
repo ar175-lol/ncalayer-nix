@@ -12,6 +12,13 @@ else
 	export LD_LIBRARY_PATH="$NCALAYER_LIBPATH"
 fi
 
+NCALAYER_DATA_DIRS="@XDG_DATA_DIRS@:/run/current-system/sw/share"
+if [[ -n "${XDG_DATA_DIRS:-}" ]]; then
+	export XDG_DATA_DIRS="$NCALAYER_DATA_DIRS:$XDG_DATA_DIRS"
+else
+	export XDG_DATA_DIRS="$NCALAYER_DATA_DIRS"
+fi
+
 version() {
 	echo "NCALayer 1.4"
 }

@@ -46,6 +46,9 @@
 
             gtk3
             glib
+            gsettings-desktop-schemas
+            hicolor-icon-theme
+            adwaita-icon-theme
             libappindicator-gtk3
             cairo
             pango
@@ -65,7 +68,9 @@
 
         profile = ''
           export FONTCONFIG_PATH=/etc/fonts
-          export XDG_DATA_DIRS="$XDG_DATA_DIRS:${dejavu_fonts}/share:${noto-fonts}/share"
+          # GSETTINGS_SCHEMAS_PATH is only set by nix-shell hooks, not at
+          # FHS-env runtime - point straight at the schemas instead.
+          export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS:/run/current-system/sw/share:${dejavu_fonts}/share:${noto-fonts}/share"
         '';
       };
 

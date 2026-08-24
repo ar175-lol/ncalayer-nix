@@ -8,8 +8,11 @@
   patchelf,
   glibc,
   glib,
+  gsettings-desktop-schemas,
   gtk2,
   gtk3,
+  hicolor-icon-theme,
+  adwaita-icon-theme,
   libX11,
   libXext,
   libXrender,
@@ -69,6 +72,18 @@
     libGLU.out
     cups.lib
     (lib.getLib pcsclite)
+  ];
+
+  # GLib looks for schemas under <XDG_DATA_DIR>/glib-2.0/schemas, but nixpkgs
+  # installs them under share/gsettings-schemas/<name>/glib-2.0/schemas - hence
+  # the inner dirs. gtk3 ships org.gtk.Settings.FileChooser et al., needed by
+  # java.awt.FileDialog; icon themes are needed for the tray icon.
+  xdgDataDirs = lib.concatStringsSep ":" [
+    "${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}"
+    "${gtk3.out}/share/gsettings-schemas/${gtk3.out.name}"
+    "${gtk3.out}/share"
+    "${hicolor-icon-theme}/share"
+    "${adwaita-icon-theme}/share"
   ];
 in
   stdenv.mkDerivation (finalAttrs: {
@@ -135,7 +150,8 @@ in
         --replace '@JRE@' "$out/lib/ncalayer/jre8_ncalayer" \
         --replace '@JAR@' "$out/lib/ncalayer/ncalayer.jar" \
         --replace '@PCSC_LIB@' "${lib.getLib pcsclite}/lib/libpcsclite.so.1" \
-        --replace '@LD_LIBRARY_PATH@' "${libPath}"
+        --replace '@LD_LIBRARY_PATH@' "${libPath}" \
+        --replace '@XDG_DATA_DIRS@' "${xdgDataDirs}"
       chmod +x $out/bin/ncalayer
 
       # Accessory GUIs (statically linked Go binaries that talk to NCALayer).
