@@ -1,5 +1,8 @@
 # NCALayer for Nix / NixOS
 
+> [!NOTE]
+> 100% AI-generated. This entire repository, including the code and documentation, was completely built using AI.
+
 A Nix flake that packages [NCALayer](https://pki.gov.kz) — the software
 for working with electronic digital signatures of the National Certification
 Authority of the Republic of Kazakhstan (NCA RK).
