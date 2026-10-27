@@ -43,9 +43,8 @@ runCommand "ncalayer-checks" {
   export HOME="$(mktemp -d)"
   ${ncalayer}/bin/ncalayer-install-certs
 
-  for db in "$HOME/.pki/nssdb" "$HOME/.local/share/pki/nssdb"; do
-    ${nssTools}/bin/certutil -L -d "sql:$db" | grep -q 'root_rsa.cer'
-    ${nssTools}/bin/certutil -L -d "sql:$db" | grep -q 'nca_rsa.cer'
+  for cert in root_rsa.cer nca_rsa.cer; do
+    ${nssTools}/bin/certutil -L -d "sql:$HOME/.local/share/pki/nssdb" | grep -q "$cert"
   done
 
   out_file=$(mktemp)

@@ -12,12 +12,14 @@ add_certs() {
 		-i "$certs/nca_rsa.cer" -d "sql:$db" </dev/null >/dev/null 2>&1 || true
 }
 
+if [ ! -d "$HOME/.pki/nssdb" ] && [ ! -d "$HOME/.local/share/pki/nssdb" ]; then
+	mkdir -p "$HOME/.local/share/pki/nssdb"
+	chmod 700 "$HOME/.local/share/pki/nssdb"
+	"$certutil" -N --empty-password -d "sql:$HOME/.local/share/pki/nssdb" </dev/null >/dev/null 2>&1 || true
+fi
+
 for db in "$HOME/.pki/nssdb" "$HOME/.local/share/pki/nssdb"; do
-	if [ ! -d "$db" ]; then
-		mkdir -p "$db"
-		chmod 700 "$db"
-		"$certutil" -N --empty-password -d "sql:$db" </dev/null >/dev/null 2>&1 || true
-	fi
+	[ -d "$db" ] || continue
 	add_certs "$db"
 done
 
