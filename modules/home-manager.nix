@@ -21,10 +21,22 @@ in {
       default = true;
       description = "Start NCALayer with the graphical session via a systemd user service.";
     };
+
+    installCertificates = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Install the NCA RK root certificates into browser NSS databases.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
     home.packages = [cfg.package];
+
+    home.activation.ncalayerInstallCertificates = lib.mkIf cfg.installCertificates (
+      lib.hm.dag.entryAfter ["writeBoundary"] ''
+        run ${cfg.package}/bin/ncalayer-install-certs || true
+      ''
+    );
 
     systemd.user.services.ncalayer = lib.mkIf cfg.autostart {
       Unit = {

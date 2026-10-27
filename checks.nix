@@ -6,10 +6,11 @@
   gnugrep,
   gnused,
   file,
+  nssTools,
   ncalayer,
 }:
 runCommand "ncalayer-checks" {
-  buildInputs = [unzip coreutils gnugrep gnused file];
+  buildInputs = [unzip coreutils gnugrep gnused file nssTools];
 } ''
   set -euo pipefail
 
@@ -23,6 +24,7 @@ runCommand "ncalayer-checks" {
 
   for f in \
     "${ncalayer}/bin/ncalayer" \
+    "${ncalayer}/bin/ncalayer-install-certs" \
     "${ncalayer}/bin/showBundleManager" \
     "${ncalayer}/bin/showSettings" \
     "${ncalayer}/share/applications/ncalayer.desktop" \
@@ -37,6 +39,14 @@ runCommand "ncalayer-checks" {
 
   grep -q '^Exec=ncalayer$' \
     "${ncalayer}"/share/applications/ncalayer.desktop
+
+  export HOME="$(mktemp -d)"
+  ${ncalayer}/bin/ncalayer-install-certs
+
+  for db in "$HOME/.pki/nssdb" "$HOME/.local/share/pki/nssdb"; do
+    ${nssTools}/bin/certutil -L -d "sql:$db" | grep -q 'root_rsa.cer'
+    ${nssTools}/bin/certutil -L -d "sql:$db" | grep -q 'nca_rsa.cer'
+  done
 
   out_file=$(mktemp)
   ${ncalayer}/bin/ncalayer >"$out_file" 2>&1 &

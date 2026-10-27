@@ -33,6 +33,12 @@ in {
       default = true;
       description = "Install fonts with Cyrillic coverage for the Java GUI.";
     };
+
+    installCertificates = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Install the NCA RK root certificates into browser NSS databases.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -56,6 +62,16 @@ in {
         ExecStart = "${cfg.package}/bin/ncalayer";
         Restart = "on-failure";
         RestartSec = 3;
+      };
+    };
+
+    systemd.user.services.ncalayer-install-certs = lib.mkIf cfg.installCertificates {
+      description = "Install NCALayer root certificates into browser NSS databases";
+      wantedBy = ["default.target"];
+      before = ["ncalayer.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${cfg.package}/bin/ncalayer-install-certs";
       };
     };
   };

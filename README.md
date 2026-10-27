@@ -39,6 +39,7 @@ services.ncalayer = {
   enablePcsc = true;                  # pcscd daemon for smartcard readers
   autostart = true;                   # start with the graphical session
   enableFonts = true;                 # Cyrillic fonts for the Java GUI
+  installCertificates = true;         # trust the NCA RK certs in browsers
   package = pkgs.ncalayer;            # optional, default: this flake's package
 };
 ```
@@ -62,6 +63,25 @@ services.ncalayer.enable = true;
 
 ```nix
 services.pcscd.enable = true;
+```
+
+## Browser certificates
+
+NCALayer serves its local API over HTTPS on `127.0.0.1:13579` using a
+certificate issued by the NCA RK hierarchy. Browsers reject the connection with
+`ERR_CERT_AUTHORITY_INVALID` until the root and intermediate certificates are
+trusted, which breaks signing on government and banking portals.
+
+The NixOS and home-manager modules install the certificates automatically into
+the NSS databases used by Chromium (`~/.pki/nssdb`,
+`~/.local/share/pki/nssdb`) and by existing Firefox/Thunderbird profiles. Set
+`services.ncalayer.installCertificates = false` to disable this. After the
+certificates are installed for the first time, restart the browser.
+
+To import the certificates manually:
+
+```bash
+ncalayer-install-certs
 ```
 
 ## Launcher

@@ -35,6 +35,7 @@
   cups,
   pcsclite,
   libappindicator-gtk3,
+  nssTools,
 }: let
   # NCALayer ships a prebuilt JRE 8, which is dynamically linked against a
   # glibc loader that does not exist on NixOS (/lib64/ld-linux-*.so.2).
@@ -158,9 +159,18 @@ in
       install -Dm755 official/additions/showBundleManager $out/bin/showBundleManager
       install -Dm755 official/additions/showSettings $out/bin/showSettings
 
-      # Root certificates, for manual addition to browser trust stores.
+      # Root certificates, for browser trust stores.
       install -Dm644 official/additions/cert/root_rsa.cer $out/share/ncalayer/certs/root_rsa.cer
       install -Dm644 official/additions/cert/nca_rsa.cer $out/share/ncalayer/certs/nca_rsa.cer
+
+      # Installs the root certificates into the user's NSS databases. NCALayer
+      # serves its local API over HTTPS with a certificate issued by the NCA RK
+      # hierarchy; browsers reject it with ERR_CERT_AUTHORITY_INVALID until the
+      # root and intermediate certificates are trusted.
+      substitute "$src/ncalayer-install-certs.sh" $out/bin/ncalayer-install-certs \
+        --replace '@CERTUTIL@' "${nssTools}/bin/certutil" \
+        --replace '@CERTS@' "$out/share/ncalayer/certs"
+      chmod +x $out/bin/ncalayer-install-certs
 
       # Menu entries / icons.
       install -Dm644 official/additions/ncalayer.png $out/share/icons/hicolor/512x512/apps/ncalayer.png
