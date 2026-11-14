@@ -5,6 +5,7 @@
   unzip,
   gnugrep,
   coreutils,
+  findutils,
   patchelf,
   glibc,
   glib,
@@ -150,7 +151,8 @@ in
         --replace '@JAR@' "$out/lib/ncalayer/ncalayer.jar" \
         --replace '@PCSC_LIB@' "${lib.getLib pcsclite}/lib/libpcsclite.so.1" \
         --replace '@LD_LIBRARY_PATH@' "${libPath}" \
-        --replace '@XDG_DATA_DIRS@' "${xdgDataDirs}"
+        --replace '@XDG_DATA_DIRS@' "${xdgDataDirs}" \
+        --replace '@INSTALL_CERTS@' "$out/bin/ncalayer-install-certs"
       chmod +x $out/bin/ncalayer
 
       # Accessory GUIs (statically linked Go binaries that talk to NCALayer).
@@ -167,6 +169,8 @@ in
       # root and intermediate certificates are trusted.
       substitute "$src/ncalayer-install-certs.sh" $out/bin/ncalayer-install-certs \
         --replace '@CERTUTIL@' "${nssTools}/bin/certutil" \
+        --replace '@FIND@' "${findutils}/bin/find" \
+        --replace '@GREP@' "${gnugrep}/bin/grep" \
         --replace '@CERTS@' "$out/share/ncalayer/certs"
       chmod +x $out/bin/ncalayer-install-certs
 
