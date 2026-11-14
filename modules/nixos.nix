@@ -62,6 +62,7 @@ in {
         ExecStart = "${cfg.package}/bin/ncalayer";
         Restart = "on-failure";
         RestartSec = 3;
+        Environment = lib.optionals (!cfg.installCertificates) ["NCALAYER_SKIP_CERT_INSTALL=1"];
       };
     };
 
@@ -72,6 +73,20 @@ in {
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${cfg.package}/bin/ncalayer-install-certs";
+      };
+    };
+
+    # Firefox-family browsers create their profile (and an empty cert9.db) on
+    # first launch, after the login-time oneshot above has already run. Poll
+    # periodically so those profiles get the NCALayer certificates without the
+    # user having to run anything manually.
+    systemd.user.timers.ncalayer-install-certs = lib.mkIf cfg.installCertificates {
+      description = "Periodically install NCALayer certificates into new browser profiles";
+      wantedBy = ["timers.target"];
+      timerConfig = {
+        Unit = "ncalayer-install-certs.service";
+        OnStartupSec = "1min";
+        OnUnitActiveSec = "5min";
       };
     };
   };

@@ -74,9 +74,17 @@ trusted, which breaks signing on government and banking portals.
 
 The NixOS and home-manager modules install the certificates automatically into
 the NSS databases used by Chromium (`~/.pki/nssdb`,
-`~/.local/share/pki/nssdb`) and by existing Firefox/Thunderbird profiles. Set
-`services.ncalayer.installCertificates = false` to disable this. After the
-certificates are installed for the first time, restart the browser.
+`~/.local/share/pki/nssdb`) and by existing Firefox-family profiles
+(Firefox, LibreWolf, Waterfox, Floorp, Zen, Thunderbird). Because these
+browsers create their profiles only on first launch, a systemd user timer also
+re-runs the installer every few minutes, and the `ncalayer` launcher runs it
+before starting. Set `services.ncalayer.installCertificates = false` to disable
+the module-managed installation; set `NCALAYER_SKIP_CERT_INSTALL=1` to stop the
+launcher from installing certificates.
+
+The installer prints a warning when no browser certificate database exists or
+when a database cannot be updated (usually because the browser is still
+running). Run it again after closing and reopening the browser.
 
 To import the certificates manually:
 
