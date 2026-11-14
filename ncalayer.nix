@@ -9,7 +9,6 @@
   glibc,
   glib,
   gsettings-desktop-schemas,
-  gtk2,
   gtk3,
   hicolor-icon-theme,
   adwaita-icon-theme,
@@ -49,7 +48,6 @@
   libPath = lib.makeLibraryPath [
     glibc.out
     glib.out
-    gtk2.out
     gtk3.out
     libappindicator-gtk3.out
     libX11.out
