@@ -108,8 +108,12 @@ in
     # The official NCALayer 1.4 Linux distribution. It already contains the
     # application jar (embedded in `ncalayer.sh`), the bundled JRE 8, accessory
     # tools and certificates, so nothing binary is versioned in this repo.
+    #
+    # Upstream overwrites this file in place without a versioned archive or
+    # changelog, so the live URL would eventually change content and break the
+    # hash. Pin a Web Archive snapshot instead: same bytes, stable URL.
     official = fetchurl {
-      url = "https://ncl.pki.gov.kz/images/NCALayer/ncalayer.zip";
+      url = "https://web.archive.org/web/20260709073222/https://ncl.pki.gov.kz/images/NCALayer/ncalayer.zip";
       sha256 = "31f47c126fe56107d76f11c446110dfa09fc397f032a54ef8ee4d7bcaf6461cb";
     };
 
@@ -184,7 +188,9 @@ in
     meta = with lib; {
       description = "NCALayer - software for working with Kazakhstan EDS (NCA RK)";
       homepage = "https://pki.gov.kz";
-      license = licenses.mit;
+      # This repository's own code is MIT, but the packaged NCALayer binary is
+      # distributed under a proprietary (unfree) license.
+      license = licenses.unfree;
       platforms = ["x86_64-linux" "aarch64-linux"];
       mainProgram = "ncalayer";
     };

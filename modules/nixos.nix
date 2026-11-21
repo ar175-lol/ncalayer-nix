@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  options,
   ...
 }: let
   cfg = config.services.ncalayer;
@@ -42,6 +43,13 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    # The NCALayer binary is unfree. Allow just this package so the module works
+    # without a global `allowUnfree`. Skipped when an external `nixpkgs.pkgs`
+    # instance is supplied, since `nixpkgs.config` is ignored in that case.
+    nixpkgs.config = lib.mkIf (!options.nixpkgs.pkgs.isDefined) {
+      allowUnfreePackages = ["ncalayer"];
+    };
+
     environment.systemPackages = [cfg.package];
 
     services.pcscd.enable = cfg.enablePcsc;

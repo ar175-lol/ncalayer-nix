@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  options,
   ...
 }: let
   cfg = config.services.ncalayer;
@@ -30,6 +31,13 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    # The NCALayer binary is unfree. Allow just this package without a global
+    # `allowUnfree`. Guarded because the nixpkgs module (and therefore
+    # `nixpkgs.config`) is absent when home-manager uses `useGlobalPkgs`.
+    nixpkgs.config = lib.mkIf (options ? nixpkgs && options.nixpkgs ? config) {
+      allowUnfreePackages = ["ncalayer"];
+    };
+
     home.packages = [cfg.package];
 
     home.activation.ncalayerInstallCertificates = lib.mkIf cfg.installCertificates (

@@ -3,12 +3,22 @@
 > [!NOTE]
 > 100% AI-generated. This entire repository, including the code and documentation, was completely built using AI.
 
+> [!NOTE]
+> The NCALayer application itself is proprietary (unfree). The flake and the
+> NixOS module allow just this package via
+> `allowUnfreePackages = [ "ncalayer" ]`, so a global `allowUnfree` is not
+> required. With home-manager's `useGlobalPkgs = true` the home-manager option
+> is ignored by design — set `nixpkgs.config.allowUnfreePackages = [ "ncalayer" ]`
+> in the system configuration (or enable the NixOS module) instead. This
+> repository's own code is MIT.
+
 A Nix flake that packages [NCALayer](https://pki.gov.kz) — the software
 for working with electronic digital signatures of the National Certification
 Authority of the Republic of Kazakhstan (NCA RK).
 
-The official NCALayer distribution (`ncalayer.zip` from `ncl.pki.gov.kz`, pinned
-by sha256) is fetched and unpacked at build time. The application jar (embedded
+The official NCALayer distribution (a pinned `ncalayer.zip` snapshot from the
+Web Archive, since upstream overwrites the live file in place) is fetched and
+unpacked at build time. The application jar (embedded
 in the self-extracting `ncalayer.sh`), the bundled JRE 8, accessory tools and
 certificates all come from that archive, so no binaries are versioned in this
 repo:

@@ -14,6 +14,15 @@
     inherit (nixpkgs) lib;
     ncalayerFor = pkgs: pkgs.callPackage ./ncalayer.nix {};
 
+    # NCALayer itself is unfree. Allow just this package for the flake's own
+    # outputs, so `nix build`/`nix run`/`nix flake check` work without a global
+    # `allowUnfree`.
+    pkgsFor = system:
+      import nixpkgs {
+        inherit system;
+        config.allowUnfreePackages = ["ncalayer"];
+      };
+
     appShell = pkgs: let
       inherit (pkgs) dejavu_fonts noto-fonts;
     in
@@ -104,28 +113,34 @@
         '';
       };
   in {
-    packages = forAllSystems (system: {
-      ncalayer = ncalayerFor nixpkgs.legacyPackages.${system};
-      default = ncalayerFor nixpkgs.legacyPackages.${system};
+    packages = forAllSystems (system: let
+      pkgs = pkgsFor system;
+    in {
+      ncalayer = ncalayerFor pkgs;
+      default = ncalayerFor pkgs;
     });
 
-    apps = forAllSystems (system: {
+    apps = forAllSystems (system: let
+      pkgs = pkgsFor system;
+    in {
       default = {
         type = "app";
-        program = lib.getExe (ncalayerFor nixpkgs.legacyPackages.${system});
+        program = lib.getExe (ncalayerFor pkgs);
       };
     });
 
     checks = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = pkgsFor system;
     in {
       default = pkgs.callPackage ./checks.nix {ncalayer = ncalayerFor pkgs;};
     });
 
-    devShells = forAllSystems (system: {
-      app = appShell nixpkgs.legacyPackages.${system};
-      contributors = shell nixpkgs.legacyPackages.${system};
-      default = appShell nixpkgs.legacyPackages.${system};
+    devShells = forAllSystems (system: let
+      pkgs = pkgsFor system;
+    in {
+      app = appShell pkgs;
+      contributors = shell pkgs;
+      default = appShell pkgs;
     });
 
     nixosModules = {
